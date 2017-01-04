@@ -19,7 +19,8 @@ class TestSendMail(TestCase):
         with open(settings.BASE_DIR + "/test_data/mrrobot.jpg", 'rb') as fp:
             response = self.client.post(
                 "/",
-                data={'file': fp.read()},
+                {'image': fp},
+                format='multipart',
                 HTTP_CONTENT_DISPOSITION="attachment; filename=upload.jpg",
             )
         self.assertEqual(response.status_code, 200)

@@ -1,5 +1,6 @@
 import os
 
+from anymail.exceptions import AnymailRequestsAPIError
 from django.core.mail import EmailMessage
 from rest_framework import parsers
 from rest_framework.response import Response
@@ -12,10 +13,10 @@ def _get_recipients():
 
 
 class SendMail(APIView):
-    parser_classes = (parsers.FileUploadParser,)
+    parser_classes = (parsers.MultiPartParser,)
 
     def post(self, request, format=None):
-        file_contents = self.request.FILES['file']
+        file_contents = self.request.FILES['image']
 
         recipients = _get_recipients()
 
@@ -24,8 +25,12 @@ class SendMail(APIView):
             body='testing',
             to=recipients,
         )
-        filestream = file_contents.read()[65:-22]
+        filestream = file_contents.read()
         mail.attach('image.jpg', filestream, 'image/jpg')
 
-        mail.send(fail_silently=False)
+        try:
+            mail.send(fail_silently=False)
+        except AnymailRequestsAPIError as exc:  # noqa
+            # TODO: setup logging
+            raise
         return Response(status=200)
