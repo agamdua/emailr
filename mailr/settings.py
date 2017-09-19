@@ -65,6 +65,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ALLOW_HEADERS = (
+    'content-disposition',
+)
+
 ROOT_URLCONF = 'mailr.urls'
 
 
