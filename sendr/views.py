@@ -1,3 +1,4 @@
+import base64
 import os
 
 from anymail.exceptions import AnymailRequestsAPIError
@@ -13,24 +14,29 @@ def _get_recipients():
 
 
 class SendMail(APIView):
-    parser_classes = (parsers.MultiPartParser,)
+    parser_classes = (parsers.MultiPartParser, parsers.FormParser, )
 
     def post(self, request, format=None):
-        file_contents = self.request.FILES['image']
+        file_contents = self.request.data['image']
+        mail_subject = self.request.data['subject']
+        body = self.request.data['body']
 
         recipients = _get_recipients()
 
         mail = EmailMessage(
-            subject='testing image',
-            body='testing',
+            subject=mail_subject,
+            body=body,
             to=recipients,
         )
-        filestream = file_contents.read()
+        filestream = base64.b64decode(file_contents[23:])
         mail.attach('image.jpg', filestream, 'image/jpg')
 
         try:
             mail.send(fail_silently=False)
         except AnymailRequestsAPIError as exc:  # noqa
+            # TODO: setup logging
+            raise
+        except Exception as ex:  # noqa
             # TODO: setup logging
             raise
         return Response(status=200)
