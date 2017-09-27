@@ -3,6 +3,7 @@ decorator==4.0.10
 dj-database-url==0.4.1
 Django==1.10.4
 django-anymail==0.7
+django-cors-headers==2.1.0
 djangorestframework==3.5.3
 enum34==1.1.6
 gunicorn==19.6.0
